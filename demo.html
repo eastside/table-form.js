@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>table-form.js Demo</title>
+    <script src="required-scripts/require.js"></script>
+    <script>
+      require.config({
+          paths: {
+              jquery: 'required-scripts/jquery-2.0.3',
+          },
+          urlArgs: "bust=" + (new Date()).getTime()
+      });
+    </script>
+  </head>
+  <body>
+    <h1>table-form.js Demo</h1>
+    
+    <h2>Simple form table</h2>
+    
+    <p>
+      In this example, we have a simple HTML table that contains three input 
+      elements, which are all blank. Form tables with no initial values begin 
+      with only the first row visible.
+    </p>
+    
+    <p>
+      Try adding some rows, entering random data, and deleting them. Notice how 
+      the table appears to act like it would in a common table editor like excel:
+      Deleting a middle row causes the data from the next row to fill it, and a 
+      row is removed from the end of the list.
+    </p>
+    
+    <p>
+      This JavaScript module follows the principle of <strong>progressive enhancement</strong>:
+      if JavaScript was disabled, the form would still work just fine -- all
+      fields would just be visible and could be filled out and submitted.
+    </p>
+    
+    <div class="is-table-form" id="ex1-table">
+      <form action="" method="get">
+        <table>
+          <caption style="display:None;">This table of form elements allows you to enter up to 3 phone numbers for yourself.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Available Phone Numbers (Max 3)</th>
+              <th scope="col">Remove Button</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="is-table-form-row">
+              <td scope="col">
+                <label for="phone_ex1_0">Phone Number</label>
+                <input type="text" id="phone_ex1_0" name="phone_ex1_0" data-field-name="phone_ex1" />
+              </td>
+              <td scope="col">
+                <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                  Remove Row 0
+                </a>
+              </td>
+            </tr>
+            <tr class="is-table-form-row">
+              <td scope="col">
+                <label for="phone_ex1_1">Phone Number</label>
+                <input type="text" id="phone_ex1_1" name="phone_ex1_1" data-field-name="phone_ex1" />
+              </td>
+              <td scope="col">
+                <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                  Remove Row 1
+                </a>
+              </td>
+            </tr>
+            <tr class="is-table-form-row">
+              <td scope="col">
+                <label for="phone_ex1_2">Phone Number</label>
+                <input type="text" id="phone_ex1_2" name="phone_ex1_2" data-field-name="phone_ex1" />
+              </td>
+              <td scope="col">
+                <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                  Remove Row 2
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          <a class="is-table-form-row-add-btn" href="javascript:void(0)" data-show-row-on-table="ex1-table" title="Add Row">Add Row</a>
+        </div>
+        <div>
+          <input type="submit" value="Submit">
+        </div>
+      </form>
+    </div>
+    
+    <h2>Simple form table w/ starting data</h2>
+    
+    <p>
+      Here, we see what it looks like when you begin with data on the third row.
+      All rows up to the row with the filled field are visible.
+    </p>
+    
+    <div class="is-table-form" id="ex2-table">
+      <form action="" method="get">
+        <table>
+          <caption style="display:None;">This table of form elements allows you to enter up to 3 phone numbers for yourself.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Available Phone Numbers (Max 3)</th>
+              <th scope="col">Remove Button</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="is-table-form-row">
+              <td scope="col">
+                <label for="phone_ex2_0">Phone Number</label>
+                <input type="text" id="phone_ex2_0" name="phone_ex2_0" data-field-name="phone_ex2" />
+              </td>
+              <td scope="col">
+                <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                  Remove Row 0
+                </a>
+              </td>
+            </tr>
+            <tr class="is-table-form-row">
+              <td scope="col">
+                <label for="phone_ex2_1">Phone Number</label>
+                <input type="text" id="phone_ex2_1" name="phone_ex2_1" data-field-name="phone_ex2" />
+              </td>
+              <td scope="col">
+                <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                  Remove Row 1
+                </a>
+              </td>
+            </tr>
+            <tr class="is-table-form-row">
+              <td scope="col">
+                <label for="phone_ex2_2">Phone Number</label>
+                <input type="text" id="phone_ex2_2" name="phone_ex2_2" data-field-name="phone_ex2" value="+1 512 000 0000" />
+              </td>
+              <td scope="col">
+                <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                  Remove Row 2
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div>
+          <a class="is-table-form-row-add-btn" href="javascript:void(0)" data-show-row-on-table="ex2-table" title="Add Row">Add Row</a>
+        </div>
+        <div>
+          <input type="submit" value="Submit">
+        </div>
+      </form>
+    </div>
+    
+    <h2>More complex form</h2>
+    
+    <p>
+      Here we have a form with many elements. Notice that this one isn't
+      an actual html table; it's a fieldset of fieldsets, which represent 
+      addresses. table-form works with on any container element.
+    </p>
+    
+    <div class="is-table-form" id="ex3-table">
+      <form action="" method="get">
+        <fieldset>
+          <legend>Please enter up to 3 addresses</legend>
+          <fieldset class="is-table-form-row">
+            <legend>Address 0</legend>
+            <div>
+              <label for="address_ex3_0">Address</label>
+              <textarea id="address_ex3_0" name="address_ex3_0" data-field-name="address_ex3"></textarea>
+              <label for="city_ex3_0">City</label>
+              <input type="text" id="city_ex3_0" name="city_ex3_0" data-field-name="city_ex3" />
+              <label for="state_ex3_0">State</label>
+              <input type="text" id="state_ex3_0" name="state_ex3_0" data-field-name="state_ex3" />
+              <label for="zip_ex3_0">Zip Code</label>
+              <input type="text" id="zip_ex3_0" name="zip_ex3_0" data-field-name="zip_ex3" />
+              <label for="address_type_ex3_0">Address Type</label>
+              <select id="address_type_ex3_0" name="address_type_ex3_0" data-field-name="address_type_ex3">
+                <option value=""></option>
+                <option value="Residence">Residence</option>
+                <option value="Business">Business</option>
+                <option value="Other">Other</option>
+              </select>
+              <fieldset>
+                <legend>Should we publish this address?</legend>
+                <label>
+                  <input type="radio" id="publish_ex3_0_yes" name="publish_ex3_0" value="True" data-field-name="publish_ex3">
+                  Yes
+                </label>
+                <label>
+                  <input type="radio" id="publish_ex3_0_no" name="publish_ex3_0" value="False" data-field-name="publish_ex3">
+                  No
+                </label>
+              </fieldset>
+            </div>
+            <div>
+              <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                Remove Row 0
+              </a>
+            </div>
+          </fieldset>
+          <fieldset class="is-table-form-row">
+            <legend>Address 1</legend>
+            <div>
+              <label for="address_ex3_1">Address</label>
+              <textarea id="address_ex3_1" name="address_ex3_1" data-field-name="address_ex3"></textarea>
+              <label for="city_ex3_1">City</label>
+              <input type="text" id="city_ex3_1" name="city_ex3_1" data-field-name="city_ex3" />
+              <label for="state_ex3_1">State</label>
+              <input type="text" id="state_ex3_1" name="state_ex3_1" data-field-name="state_ex3" />
+              <label for="zip_ex3_1">Zip Code</label>
+              <input type="text" id="zip_ex3_1" name="zip_ex3_1" data-field-name="zip_ex3" />
+              <label for="address_type_ex3_1">Address Type</label>
+              <select id="address_type_ex3_1" name="address_type_ex3_1" data-field-name="address_type_ex3">
+                <option value=""></option>
+                <option value="Residence">Residence</option>
+                <option value="Business">Business</option>
+                <option value="Other">Other</option>
+              </select>
+              <fieldset>
+                <legend>Should we publish this address?</legend>
+                <label>
+                  <input type="radio" id="publish_ex3_1_yes" name="publish_ex3_1" value="True" data-field-name="publish_ex3">
+                  Yes
+                </label>
+                <label>
+                  <input type="radio" id="publish_ex3_1_no" name="publish_ex3_1" value="False" data-field-name="publish_ex3">
+                  No
+                </label>
+              </fieldset>
+            </div>
+            <div>
+              <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                Remove Row 1
+              </a>
+            </div>
+          </fieldset>
+          <fieldset class="is-table-form-row">
+            <legend>Address 2</legend>
+            <div>
+              <label for="address_ex3_2">Address</label>
+              <textarea id="address_ex3_2" name="address_ex3_2" data-field-name="address_ex3"></textarea>
+              <label for="city_ex3_2">City</label>
+              <input type="text" id="city_ex3_2" name="city_ex3_2" data-field-name="city_ex3" />
+              <label for="state_ex3_2">State</label>
+              <input type="text" id="state_ex3_2" name="state_ex3_2" data-field-name="state_ex3" />
+              <label for="zip_ex3_2">Zip Code</label>
+              <input type="text" id="zip_ex3_2" name="zip_ex3_2" data-field-name="zip_ex3" />
+              <label for="address_type_ex3_2">Address Type</label>
+              <select id="address_type_ex3_2" name="address_type_ex3_2" data-field-name="address_type_ex3">
+                <option value=""></option>
+                <option value="Residence">Residence</option>
+                <option value="Business">Business</option>
+                <option value="Other">Other</option>
+              </select>
+              <fieldset>
+                <legend>Should we publish this address?</legend>
+                <label>
+                  <input type="radio" id="publish_ex3_2_yes" name="publish_ex3_2" value="True" data-field-name="publish_ex3">
+                  Yes
+                </label>
+                <label>
+                  <input type="radio" id="publish_ex3_2_no" name="publish_ex3_2" value="False" data-field-name="publish_ex3">
+                  No
+                </label>
+              </fieldset>
+            </div>
+            <div>
+              <a class="is-table-form-row-removal-btn" href="javascript:void(0)" title="Remove Row">
+                Remove Row 2
+              </a>
+            </div>
+          </fieldset>
+          <div><a class="is-table-form-row-add-btn" href="javascript:void(0)" data-show-row-on-table="ex2-table" title="Add Row">Add Row</a></div>
+          <div><input type="submit" value="Submit"></div>
+        </fieldset>
+      </form>
+    </div>
+        
+    <script>
+      require(['table-form'], function(tableForm) {
+          tableForm.initialize();
+      });
+    </script>
+  </body>
+</html>
