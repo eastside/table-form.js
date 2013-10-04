@@ -28,7 +28,7 @@ define(
      */
     ArrayRow.prototype.setFocusToFirstInputElement = function() {
         this.$fields[0].focus();
-    }
+    };
     
     /**
      * Checks if this row has any data in it
@@ -59,98 +59,19 @@ define(
      *     other ArrayRow has the same fields as this; i.e., it should be of
      *     the same TableForm.
      */
-    ArrayRow.prototype.swapDataWithOtherRow = function(otherRow) {
-        var alreadyProcessedRadioNames = [];
-        
+    ArrayRow.prototype.replaceDataWithOtherRow = function(otherRow) {
         for (var i = 0; i < this.$fields.length; i++) {
             var $otherField = otherRow.$fields[i];
             var $thisField = this.$fields[i];
             
-            if ($thisField.is(':radio')) {
-                // Fields are radios, which makes things tricky.
-                // We have to find all radio inputs with the same name and 
-                // determine which one is checked for each row.
-                var thisName, 
-                    otherName, 
-                    thisSelectedValue, 
-                    otherSelectedValue,
-                    otherFieldsWithSameName,
-                    thisFieldsWithSameName,
-                    nameAlreadyDealtWith;
-                
-                // First, see if we've already processed this name -- if 
-                // we have, then we've already dealt with this radio set and
-                // we can keep looping.
-                thisName = $thisField.attr("name");
-                nameAlreadyDealtWith = false;
-                for (var j = 0; j < alreadyProcessedRadioNames.length; j++) {
-                    if (thisName === alreadyProcessedRadioNames[j]) {
-                        nameAlreadyDealtWith = true;
-                        break;
-                    }
+            if ($otherField.is(':radio')) {
+                if ($otherField.is(':checked')) {
+                    $thisField.prop('checked', true);
+                } else {
+                    $thisField.prop('checked', false);
                 }
-                if (nameAlreadyDealtWith) {
-                    continue;
-                }
-                otherName = $otherField.attr("name");
-                
-                // Returns an array of fields with the same name
-                function getFieldsWithSameName(fields, name) {
-                    sameNamedFields = [];
-                    for (var j = 0; j < fields.length; j++) {
-                        if (fields[j].attr("name") === name) {
-                            sameNamedFields.push(fields[j]);
-                        }
-                    }
-                    return sameNamedFields;
-                }
-                
-                // Returns the selected value for the given name among the 
-                // array of fields
-                function getSelectedValue(fields) {
-                    for (var j = 0; j < fields.length; j++) {
-                        if (fields[j].is(':checked')) {
-                            return fields[j].attr('value');
-                        }
-                    }
-                    return false; // No selected value
-                }
-                
-                // Checks the radio button among the given fields that
-                // has the given value
-                function setField(value, fields) {
-                    for (var j = 0; j < fields.length; j++) {
-                        if (value === false) {
-                            fields[j].prop('checked', false);
-                        } else {
-                            if (fields[j].attr("value") === value) {
-                                fields[j].prop('checked', true);
-                                return; // No need to continue looping
-                            }
-                        }
-                    }
-                }
-                
-                otherFieldsWithSameName = getFieldsWithSameName(otherRow.$fields, otherName);
-                thisFieldsWithSameName = getFieldsWithSameName(this.$fields, thisName);
-
-                otherSelectedValue = getSelectedValue(otherFieldsWithSameName);
-                thisSelectedValue = getSelectedValue(thisFieldsWithSameName);
-                
-                setField(thisSelectedValue, otherFieldsWithSameName);
-                setField(otherSelectedValue, thisFieldsWithSameName);
-                
-                // We don't want to run this process over and over again
-                // for every radio button, so we'll add it to the list of
-                // already processed names.
-                alreadyProcessedRadioNames.push(thisName);
             } else {
-                // Fields are text inputs or textareas
-                var otherFieldVal = $otherField.val();
-                var thisFieldVal = $thisField.val();
-                
-                $otherField.val(thisFieldVal);
-                $thisField.val(otherFieldVal);
+                $thisField.val($otherField.val());
             }
             
             // TODO: Possibly trigger 'change' events events on each field --
@@ -163,7 +84,13 @@ define(
      */
     ArrayRow.prototype.clearData = function() {
         for (var i = 0; i < this.$fields.length; i++) {
-            this.$fields[i].val("");
+            if (this.$fields[i].is(':radio')) {
+                if (this.$fields[i].is(':checked')) {
+                    this.$fields[i].prop('checked', false);
+                }
+            } else {
+                this.$fields[i].val("");
+            }
             
             // TODO: Possibly trigger 'change' events events on each field --
             // but this didn't seem to perform well for us
@@ -345,22 +272,26 @@ define(
     };
     
     /**
-     * Pushes data down from the given row, to rows below.
+     * Pushes data down from the given row, to rows below, effectively creating
+     * a gap at the given rowNumber.
      * @param {number} rowNumber This is the number of the row from which to
      *     push down, effectively creating a gap at this row.
      */
     TableForm.prototype.offsetRowsDown = function(rowNumber) {
-        for (var i = this.rows.length - 1; i >= rowNumber; i--) {
-            if (i == rowNumber) {
-              this.rows[i].clearData();
+        for (var i = rowNumber + 1; i < this.rows.length; i++) {
+            if (i == 0) {
+                continue;
             } else {
-              this.rows[i].swapDataWithOtherRow(this.rows[i - 1]);
+                // Replace this row with the previous row
+                this.rows[i - 1].replaceDataWithOtherRow(this.rows[i]);
             }
         }
     };
     
     /**
-     * Pushes data up from the last row up to the given row.
+     * Pushes data up from the last row up to the given row, clearing data
+     * at that row. Essentially the same as pop(), except doesn't return
+     * that row.
      * @param {number} rowNumber This is the number of the row to push up 
      *     towards. Data in this row will be replaced with the row above it,
      *     that row will have its data replaced with the row above it, and so
@@ -370,9 +301,10 @@ define(
     TableForm.prototype.offsetRowsUp = function(rowNumber) {
         for (var i = rowNumber; i < this.rows.length; i++) {
             if (i == this.rows.length - 1) {
-              this.rows[i].clearData();
+                this.rows[i].clearData();
             } else {
-              this.rows[i].swapDataWithOtherRow(this.rows[i + 1]);
+                // replace this row with the next row
+                this.rows[i].replaceDataWithOtherRow(this.rows[i + 1]);
             }
         }
     };
